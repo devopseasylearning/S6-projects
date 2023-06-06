@@ -5,7 +5,7 @@
 if 
    [[ $# -ne 1 ]]
 then
-echo "Hey $USER this script required ONLY one argument which is your prefer name to run, $USER you only provided $# argument instead "
+echo "Hey $USER this script required ONLY one argument which is your prefer name to run, $USER you only provided $# argument instead"
  exit 1
 fi 
 
