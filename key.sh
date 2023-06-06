@@ -13,7 +13,7 @@ fi
 SESSION=`echo ${NAME} |  awk '{print substr($0,1,2)}'`
 
 if 
-[[ ${SESSION} == s2 ]] || [[ ${SESSION} == s3 ]] || [[ ${SESSION} == s4 ]] || [[ ${SESSION} == s5 ]] || || [[ ${SESSION} == s6 ]]
+[[ ${SESSION} == s2 ]] || [[ ${SESSION} == s3 ]] || [[ ${SESSION} == s4 ]] || [[ ${SESSION} == s5 ]] || [[ ${SESSION} == s6 ]]
 then 
 echo "looks good"
 else 
