@@ -47,7 +47,7 @@ then
   mkdir ~/.ssh || true 
   cd ~/.ssh
   yes id_rsa  | ssh-keygen -q -t rsa -N '' >/dev/null
-clear
+
 echo "CREATE AND KEY COPY"
 fi 
 
@@ -68,7 +68,7 @@ cd - && rm -rf Server-login-key
 echo "INSTRUCTIONS"
 echo "PLEASE NOTIFY ERIC VIA WHATSAPP at 832-342-0700"
 
-clear 
+
 sleep 3
 echo "##########################"
 echo "yah!!!!!!!!!!!!!!!!!!! $1 YOU MADE IT"
