@@ -66,5 +66,4 @@ git push https://devopseasylearning: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@git
 
 cd - && rm -rf Server-login-key
 echo "INSTRUCTIONS"
-echo "PLEASE NOTIFY ERIC VIA WHATSAPP at 832-342-0700"
 echo "`whoami` Bingo you made it, just let the rest for us'"
