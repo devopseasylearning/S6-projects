@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    apps: backend
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      apps: backend
+  template:
+    metadata:
+      labels:
+        apps: backend
+    spec:
+      containers:
+        - env:
+            - name: DB
+              value: endgame
+            - name: DB_HOST
+              value: db
+            - name: DB_PASS
+              value: example
+            - name: DB_USER
+              value: john
+          image: kemvoueric/endgamebackend
+          name: backend
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}
