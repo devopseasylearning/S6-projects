@@ -10,22 +10,19 @@ spec:
   resources:
     requests:
       storage: 500Mi
-status: {}
 ---
-
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: db
   name: db
 spec:
   replicas: 1
+  serviceName: db
   selector:
     matchLabels:
       app: db
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -45,9 +42,12 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data-data
               name: dbvolume
-      restartPolicy: Always
-      volumes:
-        - name: dbvolume
-          persistentVolumeClaim:
-            claimName: dbvolume
-status: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: dbvolume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
