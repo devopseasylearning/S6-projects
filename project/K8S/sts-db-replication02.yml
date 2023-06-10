@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-replication02
+spec:
+  serviceName: db-replication02
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-replication02
+  template:
+    metadata:
+      labels:
+        app: db-replication02
+    spec:
+      serviceAccountName: thunderstorm
+      containers:
+        - name: db-replication02
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: your_password_here
+          volumeMounts:
+            - name: db-replication02-data
+              mountPath: /var/lib/postgresql/data-data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-replication02-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: db
+        resources:
+          requests:
+            storage: 1Gi
+

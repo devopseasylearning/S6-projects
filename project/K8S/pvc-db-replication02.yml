@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-replication02
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: db-replication02
+  resources:
+    requests:
+      storage: 1Gi
