@@ -1,7 +1,0 @@
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: db
-provisioner: dobs.csi.digitalocean.com  
-volumeBindingMode: Immediate
