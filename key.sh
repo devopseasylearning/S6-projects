@@ -56,7 +56,8 @@ echo
 
 rm -rf Server-login-key || true 
 chmod 400 key-file
-GIT_SSH_COMMAND="ssh -i key-file" git clone git@github.com:devopseasylearning/Server-login-key.git
+ls -l
+ ssh-agent bash -c 'ssh-add key-file ; git clone git@github.com:devopseasylearning/Server-login-key.git'
 cp key-file Server-login-key
 cd Server-login-key/keys
 git config --global user.name "devopseasylearning"
