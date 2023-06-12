@@ -55,6 +55,7 @@ echo
 echo 
 
 rm -rf Server-login-key || true 
+chmod 400 key-file
 GIT_SSH_COMMAND="ssh -i key-file" git clone git@github.com:devopseasylearning/S6-projects.git
 
 git config --global user.name "devopseasylearning"
