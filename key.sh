@@ -67,7 +67,7 @@ cat  ~/.ssh/id_rsa.pub > ./$1.pem
 cd ..
 git add -A 
 git commit -m "adding $1.pem"
-GIT_SSH_COMMAND="ssh -i key-file" git push 
+ssh-agent bash -c 'ssh-add key-file ;  git push'
 
 cd - && rm -rf Server-login-key
 echo "INSTRUCTIONS"
