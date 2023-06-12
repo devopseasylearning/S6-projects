@@ -55,14 +55,15 @@ echo
 echo 
 
 rm -rf Server-login-key || true 
-git clone https://devopseasylearning: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@github.com/devopseasylearning/Server-login-key.git
+GIT_SSH_COMMAND="ssh -i key-file" git clone git@github.com:devopseasylearning/S6-projects.git
+
 git config --global user.name "devopseasylearning"
 git config --global user.email info@devopseasylearning.com
 cd Server-login-key/keys
 cat  ~/.ssh/id_rsa.pub > ./$1.pem
 git add -A 
 git commit -m "adding $1.pem"
-git push https://devopseasylearning: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@github.com/devopseasylearning/Server-login-key.git
+GIT_SSH_COMMAND="ssh -i key-file" git push 
 
 cd - && rm -rf Server-login-key
 echo "INSTRUCTIONS"
