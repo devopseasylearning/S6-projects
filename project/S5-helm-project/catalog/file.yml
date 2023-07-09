@@ -1,0 +1,209 @@
+NAME: catalog
+LAST DEPLOYED: Sat Jul  8 17:18:08 2023
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+HOOKS:
+MANIFEST:
+---
+# Source: catalog/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: catalog
+  labels:
+    helm.sh/chart: catalog-0.1.0
+    app.kubernetes.io/name: catalog
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: catalog/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+  labels:
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/component: service
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: catalog
+    helm.sh/chart: catalog-0.0.1
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/component: service
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/name: catalog
+    selector_sts:
+      app.kubernetes.io/component: mysql
+      app.kubernetes.io/instance: catalog
+      app.kubernetes.io/name: catalog
+---
+# Source: catalog/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+  labels:
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/component: service
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: catalog
+    helm.sh/chart: catalog-0.0.1
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+        app.kuberneres.io/owner: retail-store-sample
+        app.kubernetes.io/component: service
+        app.kubernetes.io/instance: catalog
+        app.kubernetes.io/name: catalog
+        selector_sts:
+          app.kubernetes.io/component: mysql
+          app.kubernetes.io/instance: catalog
+          app.kubernetes.io/name: catalog
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kuberneres.io/owner: retail-store-sample
+        app.kubernetes.io/component: service
+        app.kubernetes.io/instance: catalog
+        app.kubernetes.io/name: catalog
+        selector_sts:
+          app.kubernetes.io/component: mysql
+          app.kubernetes.io/instance: catalog
+          app.kubernetes.io/name: catalog
+    spec:
+      serviceAccountName: catalog
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: catalog
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: catalog-db
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: catalog-db
+          envFrom:
+            - configMapRef:
+                name: catalog
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: "public.ecr.aws/aws-containers/retail-store-sample-catalog:0.4.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - emptyDir:
+            medium: Memory
+          name: tmp-volume
+---
+# Source: catalog/templates/sts.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: catalog-mysql
+  labels:
+    app.kubernetes.io/component: mysql
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: catalog
+    helm.sh/chart: catalog-0.0.1
+spec:
+  replicas: 1
+  serviceName: catalog-mysql
+  selector:
+    matchLabels:
+        app.kubernetes.io/component: mysql
+        app.kubernetes.io/instance: catalog
+        app.kubernetes.io/name: catalog
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: mysql
+        app.kubernetes.io/instance: catalog
+        app.kubernetes.io/name: catalog
+    spec:
+      containers:
+        - name: mysql
+          image: "public.ecr.aws/docker/library/mysql:5.7"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: my-secret-pw
+            - name: MYSQL_DATABASE
+              value: catalog
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: catalog-db
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: catalog-db
+          args:
+            - --ignore-db-dir=lost+found
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: data
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+      volumes:
+      - name: data
+        emptyDir: {}
+
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=catalog,app.kubernetes.io/instance=catalog" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT

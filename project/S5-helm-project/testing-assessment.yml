@@ -1,0 +1,51 @@
+# load ---------------------> 
+# server 
+# acceptance 
+# security 
+
+ns 
+
+
+ui: 
+  - sa (2)
+  - cm (2)
+  - svc (2)
+  - deploy (2)  # - hpa
+
+
+assets:
+   - sa 
+   - cm  
+   - svc 
+   - deployment    # - hpa 
+
+
+carts: 
+  - sa 
+  - cm 
+  - svc (02) 
+  - deploy (02)   # - hpa 
+
+
+
+catalog: 
+  - svc (02)
+  - deploy (2)    # - hpa 
+  - sts (2)     # - hpa 
+  - sa (2)
+  - secret (2)
+  - cm (2)
+
+checkout: 
+  - sa 
+  - cm 
+  - svc (2)
+  - deploy (2) # - hpa 
+
+orders: 
+  - sa 
+  - secret (2)
+  - cm 
+  - svc (3) 
+  - deploy  # - hpa 
+  - sts (2) # - hpa 
