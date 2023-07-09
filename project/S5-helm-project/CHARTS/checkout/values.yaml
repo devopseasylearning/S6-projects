@@ -1,49 +1,20 @@
-# Default values for catalog.
+# Default values for checkout.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+
 image:
-  repository: "public.ecr.aws/aws-containers/retail-store-sample-catalog"
+  repository: "public.ecr.aws/aws-containers/retail-store-sample-checkout"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.4.0"
-database:
-  volumes:  
-     name: data
-  name: mysql
-  repository: public.ecr.aws/docker/library/mysql
-  args: "--ignore-db-dir=lost+found"
-  containerPort: 3306
-  tag: "5.7"   
-  env:
-    - name: MYSQL_ROOT_PASSWORD
-      value: my-secret-pw
-    - name: MYSQL_DATABASE
-      value: catalog
-    - name: MYSQL_USER
-      valueFrom:
-        secretKeyRef:
-          name: catalog-db
-          key: username
-    - name: MYSQL_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: catalog-db
-          key: password
-  volumeMounts:
-   - name: data
-     mountPath: /var/lib/mysql
-  labels:
-    helm.sh/chart: catalog-0.0.1
-    app.kubernetes.io/name: catalog
-    app.kubernetes.io/instance: catalog
-    app.kubernetes.io/component: mysql
-    app.kubernetes.io/managed-by: Helm
-  selector:
-    app.kubernetes.io/name: catalog
-    app.kubernetes.io/instance: catalog
-    app.kubernetes.io/component: mysql
+redis: 
+  port: 6379
+  name: redis
+  image: "redis"
+  tag: "6.0-alpine"
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -52,15 +23,15 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: 
+  annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: 
-    prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
-    prometheus.io/scrape: "true"
+podAnnotations:
+  prometheus.io/path: /actuator/prometheus
+  prometheus.io/port: "8080"
+  prometheus.io/scrape: "true"
 podSecurityContext: 
   fsGroup: 1000
 
@@ -103,6 +74,7 @@ resources:
     requests:
       cpu: 128m
       memory: 256Mi
+
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -115,45 +87,50 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-strategy:
-  maxUnavailable: 1
-  type: RollingUpdate
-
-
 labels:
-  helm.sh/chart: catalog-0.0.1
-  app.kubernetes.io/name: catalog
-  app.kubernetes.io/instance: catalog
+  helm.sh/chart: checkout-0.0.1
+  app.kubernetes.io/name: checkout
+  app.kubernetes.io/instance: checkout
   app.kubernetes.io/component: service
   app.kuberneres.io/owner: retail-store-sample
   app.kubernetes.io/managed-by: Helm
 
+labels_redis:
+  helm.sh/chart: checkout-0.0.1
+  app.kubernetes.io/name: checkout
+  app.kubernetes.io/instance: checkout
+  app.kubernetes.io/component: redis
+  app.kubernetes.io/managed-by: Helm
+selector_redis:
+  app.kubernetes.io/name: checkout
+  app.kubernetes.io/instance: checkout
+  app.kubernetes.io/component: redis
 selector:
-  app.kubernetes.io/name: catalog
-  app.kubernetes.io/instance: catalog
+  app.kubernetes.io/name: checkout
+  app.kubernetes.io/instance: checkout
   app.kubernetes.io/component: service
   app.kuberneres.io/owner: retail-store-sample
+data:
+  REDIS_URL: redis://checkout-redis:6379
+  ENDPOINTS_ORDERS: http://orders:80
 
-  selector_sts:
-      app.kubernetes.io/name: catalog
-      app.kubernetes.io/instance: catalog
-      app.kubernetes.io/component: mysql
+volumeMounts:
+  - mountPath: /tmp
+    name: tmp-volume
+
+volumes:
+  - name: tmp-volume
+    emptyDir:
+      medium: Memory
+
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+  type: RollingUpdate
 
 env:
-  - name: DB_USER
-    valueFrom:
-      secretKeyRef:
-        name: catalog-db
-        key: username
-  - name: DB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: catalog-db
-        key: password
-envFrom:
-  - configMapRef:
-      name: catalog
+  configMapRef:
+    name: checkout
 
 livenessProbe:
   httpGet:
@@ -161,11 +138,3 @@ livenessProbe:
     port: 8080
   initialDelaySeconds: 30
   periodSeconds: 3
-
-volumeMounts:
-   - mountPath: /tmp
-     name: tmp-volume
-volumes:
-  - name: tmp-volume
-    emptyDir:
-      medium: Memory

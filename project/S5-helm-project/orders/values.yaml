@@ -1,0 +1,219 @@
+# Default values for orders.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: public.ecr.aws/aws-containers/retail-store-sample-orders
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.4.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: 
+  prometheus.io/path: /actuator/prometheus
+  prometheus.io/port: "8080"
+  prometheus.io/scrape: "true"
+
+podSecurityContext: 
+   fsGroup: 1000
+
+securityContext: 
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  containerPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 128m
+      memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+labels:
+  helm.sh/chart: orders-0.0.1
+  app.kubernetes.io/name: orders
+  app.kubernetes.io/instance: orders
+  app.kubernetes.io/component: service
+  app.kuberneres.io/owner: retail-store-sample
+  app.kubernetes.io/managed-by: Helm
+selector:
+  app.kubernetes.io/name: orders
+  app.kubernetes.io/instance: orders
+  app.kubernetes.io/component: service
+  app.kuberneres.io/owner: retail-store-sample
+database:
+  mysql: 
+       name: mysql 
+       image: mysql 
+       tag: "5.7"
+       port: 3306
+       args: "--ignore-db-dir=lost+found"
+       env:
+           name_1: MYSQL_ROOT_PASSWORD
+           value_1: my-secret-pw
+           name_2: MYSQL_DATABASE
+           value_2: orders
+           name_3: MYSQL_USER
+           valueFrom_1:
+             secretKeyRef:
+               name: orders-db
+               key: username
+           name_4: MYSQL_PASSWORD
+           valueFrom_2:
+             secretKeyRef:
+               name: orders-db
+               key: password
+       volumeMounts:
+           name: data
+           mountPath: /var/lib/mysql
+  rabbitmq: 
+   image: rabbitmq
+   tag: 3-management
+   name: rabbitmq
+   ports:
+      amqp:
+       port: 5672
+       targetPort: amqp
+       name: amqp
+      http:
+         port: 15672
+   volumes:
+         name: data
+         mountPath: "/var/lib/rabbitmq/mnesia"
+
+
+  data:
+    username: "b3JkZXJz"
+    password: "dk1vZzM2UEV4djh6aDNSSQ=="
+  selector_mysql:
+    app.kubernetes.io/name: orders
+    app.kubernetes.io/instance: orders
+    app.kubernetes.io/component: mysql
+  labels_mysql:
+    helm.sh/chart: orders-0.0.1
+    app.kubernetes.io/name: orders
+    app.kubernetes.io/instance: orders
+    app.kubernetes.io/component: mysql
+    app.kubernetes.io/managed-by: Helm
+  labels_rabbitmq:
+    helm.sh/chart: orders-0.0.1
+    app.kubernetes.io/name: orders
+    app.kubernetes.io/instance: orders
+    app.kubernetes.io/component: rabbitmq
+    app.kubernetes.io/managed-by: Helm
+  selector_rabbitmq:
+    app.kubernetes.io/name: orders
+    app.kubernetes.io/instance: orders
+    app.kubernetes.io/component: rabbitmq
+data:
+  SPRING_PROFILES_ACTIVE: mysql,rabbitmq
+  SPRING_DATASOURCE_READER_URL: jdbc:mariadb://orders-mysql:3306/orders
+  SPRING_DATASOURCE_WRITER_URL: jdbc:mariadb://orders-mysql:3306/orders
+  SPRING_RABBITMQ_ADDRESSES: amqp://orders-rabbitmq:5672
+
+
+env:
+  - name: JAVA_OPTS
+    value: -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom
+  - name: SPRING_DATASOURCE_WRITER_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: orders-db
+        key: username
+  - name: SPRING_DATASOURCE_WRITER_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: orders-db
+        key: password
+  - name: SPRING_DATASOURCE_READER_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: orders-db
+        key: username
+  - name: SPRING_DATASOURCE_READER_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: orders-db
+        key: password
+
+envFrom:
+  - secretRef:
+      name: orders-rabbitmq
+  - configMapRef:
+      name: orders
+
+volumeMounts:
+  - mountPath: /tmp
+    name: tmp-volume
+
+volumes:
+  - name: tmp-volume
+    emptyDir:
+      medium: Memory
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  initialDelaySeconds: 45
+  periodSeconds: 3
+
+
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+  type: RollingUpdate

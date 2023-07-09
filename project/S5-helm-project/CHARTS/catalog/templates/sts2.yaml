@@ -1,0 +1,40 @@
+{{- if .Values.second_set.create -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "catalog.fullname" . }}-{{ .Values.database.name }}
+  labels:
+    {{- toYaml .Values.database.labels | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: {{ include "catalog.fullname" . }}-{{ .Values.database.name }}
+  selector:
+    matchLabels:
+      {{- toYaml .Values.database.selector | nindent 8 }}
+  template:
+    metadata:
+      labels:
+      {{- toYaml .Values.database.selector | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.database.name }}
+          image: "{{ .Values.database.repository }}:{{ .Values.database.tag }}"
+          {{- with .Values.imagePullSecrets }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          env:
+             {{- toYaml .Values.database.env | nindent 12 }}
+          args:
+            - {{ .Values.database.args }}
+          volumeMounts:
+            {{- toYaml .Values.database.volumeMounts | nindent 12 }}
+          ports:
+            - name: {{ .Values.database.name }}
+              containerPort: {{ .Values.database.containerPort }}
+              protocol: TCP
+      volumes:
+      - name: {{ .Values.database.volumes.name }}
+        emptyDir: {}
+{{- end }}

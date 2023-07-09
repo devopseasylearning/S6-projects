@@ -1,5 +1,5 @@
 NAME: catalog
-LAST DEPLOYED: Sat Jul  8 17:18:08 2023
+LAST DEPLOYED: Sun Jul  9 14:04:23 2023
 NAMESPACE: default
 STATUS: pending-install
 REVISION: 1
@@ -13,11 +13,54 @@ kind: ServiceAccount
 metadata:
   name: catalog
   labels:
-    helm.sh/chart: catalog-0.1.0
-    app.kubernetes.io/name: catalog
+    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/component: service
     app.kubernetes.io/instance: catalog
-    app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: catalog
+    helm.sh/chart: catalog-0.0.1
+---
+# Source: catalog/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: catalog-db
+data:
+  username: "Y2F0YWxvZw=="
+  password: "b0R1STdETk9oTFR3aDJrWA=="
+---
+# Source: catalog/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog
+data:
+  DB_ENDPOINT: catalog-mysql:3306
+  DB_READ_ENDPOINT: catalog-mysql:3306
+  DB_NAME: catalog
+---
+# Source: catalog/templates/service-mysql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-mysql
+  labels:
+    app.kubernetes.io/component: mysql
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: catalog
+    helm.sh/chart: catalog-0.0.1
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: mysql
+      protocol: TCP
+      name: mysql
+  selector:
+    app.kubernetes.io/component: mysql
+    app.kubernetes.io/instance: catalog
+    app.kubernetes.io/name: catalog
 ---
 # Source: catalog/templates/service.yaml
 apiVersion: v1
@@ -43,10 +86,6 @@ spec:
     app.kubernetes.io/component: service
     app.kubernetes.io/instance: catalog
     app.kubernetes.io/name: catalog
-    selector_sts:
-      app.kubernetes.io/component: mysql
-      app.kubernetes.io/instance: catalog
-      app.kubernetes.io/name: catalog
 ---
 # Source: catalog/templates/deployment.yaml
 apiVersion: apps/v1
@@ -72,10 +111,6 @@ spec:
         app.kubernetes.io/component: service
         app.kubernetes.io/instance: catalog
         app.kubernetes.io/name: catalog
-        selector_sts:
-          app.kubernetes.io/component: mysql
-          app.kubernetes.io/instance: catalog
-          app.kubernetes.io/name: catalog
   template:
     metadata:
       annotations:
@@ -87,10 +122,6 @@ spec:
         app.kubernetes.io/component: service
         app.kubernetes.io/instance: catalog
         app.kubernetes.io/name: catalog
-        selector_sts:
-          app.kubernetes.io/component: mysql
-          app.kubernetes.io/instance: catalog
-          app.kubernetes.io/name: catalog
     spec:
       serviceAccountName: catalog
       securityContext:

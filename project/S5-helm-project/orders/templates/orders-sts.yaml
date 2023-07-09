@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "orders.fullname" . }}-{{ .Values.database.mysql.name }}
+  labels:
+    {{- toYaml .Values.database.labels_mysql | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: {{ include "orders.fullname" . }}-{{ .Values.database.mysql.name }}
+  selector:
+    matchLabels:
+      {{- toYaml .Values.database.selector_mysql | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        {{- toYaml .Values.database.selector_mysql | nindent 4 }}
+    spec:
+      containers:
+        - name: {{ .Values.database.mysql.name }}
+          image: "{{ .Values.database.mysql.image }}:{{ .Values.database.mysql.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+             - name: {{ .Values.database.mysql.env.name_1 }}
+               value: {{ .Values.database.mysql.env.value_1 }}
+             - name: {{ .Values.database.mysql.env.name_2 }}
+               value: {{ .Values.database.mysql.env.value_2 }}
+             - name: {{ .Values.database.mysql.env.name_3 }}
+               valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.database.mysql.env.valueFrom_1.secretKeyRef.name }}
+                   key: {{ .Values.database.mysql.env.valueFrom_1.secretKeyRef.key }}
+             - name: {{ .Values.database.mysql.env.name_4 }}
+               valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.database.mysql.env.valueFrom_2.secretKeyRef.name }}
+                   key: {{ .Values.database.mysql.env.valueFrom_2.secretKeyRef.key }}
+          args:
+            - {{ .Values.database.mysql.args }}
+          volumeMounts:
+            - name: {{ .Values.database.mysql.volumeMounts.name }}
+              mountPath: {{ .Values.database.mysql.volumeMounts.mountPath }}
+          ports:
+            - name: {{ .Values.database.mysql.name }}
+              containerPort: {{ .Values.database.mysql.port}}
+              protocol: TCP
+      volumes:
+      - name: {{ .Values.database.mysql.volumeMounts.name }}
+        emptyDir: {}

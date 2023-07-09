@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "orders.fullname" . }}-{{ .Values.database.rabbitmq.name }}
+  labels:
+    {{- toYaml .Values.database.labels_rabbitmq | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: {{ include "orders.fullname" . }}-{{ .Values.database.rabbitmq.name }}
+  selector:
+    matchLabels:
+      {{- toYaml .Values.database.selector_rabbitmq | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        {{- toYaml .Values.database.selector_rabbitmq | nindent 4 }}
+    spec:
+      containers:
+        - name: {{ .Values.database.rabbitmq.name }}
+          image: "{{ .Values.database.rabbitmq.image }}:{{ .Values.database.rabbitmq.tag }}"
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: {{ .Values.database.rabbitmq.volumes.name }}
+              mountPath: {{ .Values.database.rabbitmq.volumes.mountPath }}
+          ports:
+             - port: {{ .Values.database.rabbitmq.ports.amqp.port }}
+               targetPort: {{ .Values.database.rabbitmq.ports.amqp.targetPort }}
+               protocol: TCP
+               name: amqp
+             - port: {{ .Values.database.rabbitmq.ports.http.port }}
+               targetPort: http
+               protocol: TCP
+               name: http
+      volumes:
+      - name: {{ .Values.database.rabbitmq.volumes.name }}
+        emptyDir: {}
