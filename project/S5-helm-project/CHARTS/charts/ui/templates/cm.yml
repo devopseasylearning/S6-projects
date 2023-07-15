@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ui.fullname" . }}
+data:
+  ENDPOINTS_CATALOG: {{ .Values.data.ENDPOINTS_CATALOG }}

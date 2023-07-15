@@ -126,12 +126,14 @@ database:
    name: rabbitmq
    ports:
       amqp:
-       port: 5672
-       targetPort: amqp
-       name: amqp
-      http:
+          port: 5672
+          containerPort: 5672
+          name: amqp
+      http:  
          port: 15672
-   volumes:
+         containerPort: 15672
+         name: http     
+   volumes: 
          name: data
          mountPath: "/var/lib/rabbitmq/mnesia"
 

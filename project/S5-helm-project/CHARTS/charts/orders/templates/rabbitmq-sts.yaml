@@ -9,11 +9,11 @@ spec:
   serviceName: {{ include "orders.fullname" . }}-{{ .Values.database.rabbitmq.name }}
   selector:
     matchLabels:
-      {{- toYaml .Values.database.selector_rabbitmq | nindent 4 }}
+      {{- toYaml .Values.database.selector_rabbitmq | nindent 8 }}
   template:
     metadata:
       labels:
-        {{- toYaml .Values.database.selector_rabbitmq | nindent 4 }}
+        {{- toYaml .Values.database.selector_rabbitmq | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.database.rabbitmq.name }}
@@ -23,14 +23,13 @@ spec:
             - name: {{ .Values.database.rabbitmq.volumes.name }}
               mountPath: {{ .Values.database.rabbitmq.volumes.mountPath }}
           ports:
-             - port: {{ .Values.database.rabbitmq.ports.amqp.port }}
-               targetPort: {{ .Values.database.rabbitmq.ports.amqp.targetPort }}
+
+            -  containerPort: {{ .Values.database.rabbitmq.ports.amqp.containerPort }}
                protocol: TCP
-               name: amqp
-             - port: {{ .Values.database.rabbitmq.ports.http.port }}
-               targetPort: http
+               name: {{ .Values.database.rabbitmq.ports.amqp.name }}
+            -  containerPort: {{ .Values.database.rabbitmq.ports.http.containerPort }}
                protocol: TCP
-               name: http
+               name: {{ .Values.database.rabbitmq.ports.http.name }}
       volumes:
       - name: {{ .Values.database.rabbitmq.volumes.name }}
         emptyDir: {}

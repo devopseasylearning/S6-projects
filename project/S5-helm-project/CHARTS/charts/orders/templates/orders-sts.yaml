@@ -9,11 +9,11 @@ spec:
   serviceName: {{ include "orders.fullname" . }}-{{ .Values.database.mysql.name }}
   selector:
     matchLabels:
-      {{- toYaml .Values.database.selector_mysql | nindent 4 }}
+      {{- toYaml .Values.database.selector_mysql | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- toYaml .Values.database.selector_mysql | nindent 4 }}
+        {{- toYaml .Values.database.selector_mysql | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.database.mysql.name }}
