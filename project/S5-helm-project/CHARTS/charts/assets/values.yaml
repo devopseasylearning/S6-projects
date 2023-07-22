@@ -43,7 +43,8 @@ service:
   data:
     PORT: '8080'
   apiVersion: v1
-
+pdb:
+  enabled: false
 ingress:
   enabled: false
   className: ""

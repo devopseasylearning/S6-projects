@@ -1,0 +1,11 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "assets.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- toYaml .Values.selector | nindent 6 }}
+  maxUnavailable: 1  
+{{- end }}

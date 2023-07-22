@@ -4,8 +4,11 @@ autoscaling:
   maxReplicas: 50
   targetCPUUtilizationPercentage: 60
   # targetMemoryUtilizationPercentage: 60
-
-
+replicaCount: 4
+image:
+  tag: "0.4.0"
+ingress:
+  enabled: true
 resources: 
   limits:
     memory: 200Mi
@@ -13,9 +16,5 @@ resources:
     cpu: 200m
     memory: 200Mi
 
-service:
-  type: LoadBalancer
-
-replicaCount: 4
-image:
-  tag: "0.4.0"
+pdb:
+  enabled: true

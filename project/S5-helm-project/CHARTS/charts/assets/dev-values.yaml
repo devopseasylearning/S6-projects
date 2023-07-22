@@ -1,6 +1,13 @@
+replicaCount: 1
+image:
+  tag: "0.4.0"
+
 resources: 
   limits:
     memory: 100Mi
   requests:
     cpu: 100m
     memory: 100Mi
+
+service:
+  type: LoadBalancer
