@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thomisis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: nginx
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: thomisis
+              key: MYSQL_ROOT_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: thomisis
+              key: REDIS_PASSWORD
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: thomisis
+              key: APIKEY
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: thomisis
+              key: DB_PASSWORD
+        - name: REDIS_PASSWORD_2
+          valueFrom:
+            secretKeyRef:
+              name: thomisis
+              key: REDIS_PASSWORD_2
+        - name: AUTH_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: AUTH_HOST
+        - name: AUTH_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: AUTH_PORT
+        - name: WEATHER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: WEATHER_HOST
+        - name: WEATHER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: WEATHER_PORT
+        - name: REDIS_USER
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: REDIS_USER
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: thomisis
+              key: DB_HOST
