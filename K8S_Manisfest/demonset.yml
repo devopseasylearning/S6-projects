@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: thomisis
+  labels:
+    app: thomisis
+spec:
+  selector:
+    matchLabels:
+      app: thomisis
+  template:
+    metadata:
+      labels:
+        app: thomisis
+    spec:
+      containers:
+      - name: thomisis
+        image: nginx
