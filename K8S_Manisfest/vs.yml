@@ -1,0 +1,41 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: s6
+  namespace: gloo-system
+spec:
+  displayName: s6
+  virtualHost:
+    domains:
+    - '*'
+    routes:
+    - matchers:
+      - prefix: /httpd
+      options:
+        prefixRewrite: /
+      routeAction:
+        single:
+          upstream:
+            name: s6-httpd-80
+            namespace: gloo-system
+    
+    - matchers:
+      - prefix: /nginx
+      options:
+        prefixRewrite: /
+      routeAction:
+        single:
+          upstream:
+            name: s6-nginx-80
+            namespace: gloo-system
+  
+    - matchers:
+      - prefix: /thomisis
+      options:
+        prefixRewrite: /
+      routeAction:
+        single:
+          upstream:
+            name: s6-thomisis-80
+            namespace: gloo-system
+    

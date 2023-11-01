@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: thomisis
+  labels:
+    app: thomisis
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      nodePort: 31008 
+      protocol: TCP
+      name: http
+  selector:
+    app: thomisis

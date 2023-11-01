@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thomisis
+  labels:
+    app: thomisis
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: thomisis
+  template:
+    metadata:
+      labels:
+        app: thomisis
+    spec:
+      serviceAccountName: thomisis
+      securityContext:
+        {}
+      containers:
+        - name: thomisis
+          securityContext:
+            {}
+          image: leonardtia/articles:develop
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+
