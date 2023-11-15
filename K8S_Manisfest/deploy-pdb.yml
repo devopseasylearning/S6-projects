@@ -1,0 +1,30 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: my-pdb
+spec:
+  minAvailable: 2         # Specifies the minimum number of Pods that must be available
+  selector:               # Defines which Pods the policy applies to
+    matchLabels:
+      app: my-app         # The label of the Pods to which this PDB applies
+
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 5                    # Number of Pods to run
+  selector:
+    matchLabels:
+      app: my-app                 # Selector to match the Pods with the Deployment
+  template:                       # Template for the Pods
+    metadata:
+      labels:
+        app: my-app               # Label applied to Pods; should match PDB selector
+    spec:
+      containers:
+      - name: my-app-container
+        image: nginx    # Replace with the image you want to use
+        ports:
+        - containerPort: 80       # Port the container exposes

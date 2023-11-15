@@ -6,11 +6,11 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-app
+      app: thomisis
   template:
     metadata:
       labels:
-        app: my-app
+        app: thomisis
     spec:
       containers:
       - name: my-app-container

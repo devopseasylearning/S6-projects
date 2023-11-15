@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: my-app
+spec:
+  minAvailable: 3         # Specifies the minimum number of Pods that must be available
+  selector:               # Defines which Pods the policy applies to
+    matchLabels:
+      app: my-app      # The label of the Pods to which this PDB applies
