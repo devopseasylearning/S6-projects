@@ -1,0 +1,67 @@
+Tell me about yourself
+Are you familiar with kubernetes, if yes what is kubermetes?
+Are you familiar with docker-compose if yes what the  main difference between docker-compose and kubernetes?
+What does mean by container orchestration?
+According to you what are the major parts  of kubernetes 
+Where you work right now, do you administer k8s or do you consume k8s ?
+What is the cloud provider that you guys use at EK TECH SOLUTION to mamage your cluster?
+How many clusters do you have a EK TECH SOLUTION and how are they used?
+What are the main components  k8s master and what is their functionality
+What will happen if etcd is full ?
+What will happen if API server start misbehaving.
+What do we say the API server is capital in k8s 
+What is kubectl use for 
+What is the cluster ?
+What are the main compoments nodes?
+What is the smallest elements of the cluster.
+where are the Kubernetes credentials stored and how it is called 
+what is k8s object
+what is configmap
+what is secret 
+what is the difference and similarity between configmap and secret 
+what is seal secret 
+how do you seal a secret in k8s 
+how do you manage secret in k8s 
+how do you make sure a copy of a pod runs on every node
+how do you manage task in k8s 
+how do you make sure you always have a sceptic number of pod in k8s 
+what is service in k8s and how do you secure your service in k8s
+what are the difference type of service in k8s 
+what is the difference between Kubernetes loadbalancer and ingress 
+if your service is type loadbalancer how will you access your application 
+what is a node in k8s 
+how do you manage multiple applications in k8s 
+what is namespace
+what is liveness and readiness probe and what is the difference between them 
+can you talk about volume in k8s
+what is the difference between pv and pvc 
+what is the difference betwen hostpath and emptydir
+what is deamonset
+what is the defference betwen deployment and statefulset
+what is stateful application 
+what is the difference between port, targetport and containerport in k8s
+what is a pod
+what is the pod structure 
+can you talk about pod lifecycle 
+can you talk about permission in k8s
+what is an init container
+what is a sidercar container
+are you familiar with k8s manifest structure 
+what is the selector in k8s 
+how do you manage autoscaling in k8s
+how can you make sure a pod get deploy only on a specific node
+how do you make sure no po get schedule on a node 
+are you familiar with affinity in k8s 
+can you talk about pod and container security in k8s 
+how do you secure a k8s cluster
+how do you secure an application k8s 
+what is your troubleshooting pattern in k8s 
+what type of deployment strategy do you use and can you talk about other k8s deployment strategy you know 
+how will you make sure k8s always use the image available on your repository at each deployment
+can you please talk about kubernetes Imagepull policy 
+how useful are kubernetes imagepull secret 
+can you talk about kubernetes network policy 
+can you talk anout kubernetes pod and container security context
+what is the difference between volumeMount and volume in kubernetes
+overall, how will you rate your experience in k8s
+how many cluster do you have in your current company  ?

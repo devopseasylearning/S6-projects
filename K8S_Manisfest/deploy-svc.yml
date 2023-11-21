@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: thomisis
+  name: thomisis-test
   labels:
     app: thomisis
 spec:

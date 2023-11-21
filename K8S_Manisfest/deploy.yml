@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: thomisis
+  name: s5-gisele
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: thomisis
@@ -13,7 +13,7 @@ spec:
         app: thomisis
     spec:
       containers:
-      - name: my-app-container
+      - name: eric
         image: nginx
         env:
         - name: MYSQL_ROOT_PASSWORD
@@ -21,16 +21,9 @@ spec:
             secretKeyRef:
               name: thomisis
               key: MYSQL_ROOT_PASSWORD
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: thomisis
-              key: REDIS_PASSWORD
-        - name: APIKEY
-          valueFrom:
-            secretKeyRef:
-              name: thomisis
-              key: APIKEY
+
+
+
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
