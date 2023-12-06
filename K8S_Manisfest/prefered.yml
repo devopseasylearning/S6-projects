@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue-data-deployment
+  labels:
+    app: preferred
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: preferred
+  template:
+    metadata:
+      labels:
+        app: preferred
+    spec:
+      containers:
+      - name: my-container
+        image: nginx
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: data
+                operator: In
+                values:
+                - s6

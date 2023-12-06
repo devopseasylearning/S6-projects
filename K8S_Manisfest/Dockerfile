@@ -1,4 +1,6 @@
-FROM ubuntu 
+FROM nginx
 WORKDIR /eric 
-RUN apt update && apt install -y vim wget curl
+RUN mkdir test1 test2 test3 
+RUN useradd john
 EXPOSE 80 89 
+USER john 

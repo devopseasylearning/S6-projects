@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 10
+  replicas: 3
   selector:
     matchLabels:
       app: nginx
@@ -15,15 +15,15 @@ spec:
         app: nginx
     spec:
       imagePullSecrets:
-      - name: regcred
+      - name: aws-ecr
       containers:
       - name: nginx
-        image: nginx:1.25.3
+        image: nginx # 064137398917.dkr.ecr.us-east-1.amazonaws.com/development:v1.0.0
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "30Mi"
-            cpu: "100m"
+            memory: "1000Gi"
+            cpu: "1000Gi"
           limits:
-            memory: "50Mi"
-            cpu: "200m"
+            memory: "1000Gi"
+            cpu: "1000Gi"

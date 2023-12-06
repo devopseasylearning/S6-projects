@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webserver1
+  template:
+    metadata:
+      labels:
+        app: webserver1
+    spec:
+      containers:
+      - name: webserver1
+        image: nginx
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webserver2
+  template:
+    metadata:
+      labels:
+        app: webserver2
+    spec:
+      containers:
+      - name: webserver2
+        image: nginx
+--- 
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deployment2  # allow-deployment1-to-deployment2
+spec:
+  podSelector:
+    matchLabels:
+      app: webserver2
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: webserver1
+  - from:
+    - podSelector:
+        matchLabels:
+          app: thomisis

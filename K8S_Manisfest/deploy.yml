@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: s5-gisele
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: thomisis
@@ -14,16 +14,13 @@ spec:
     spec:
       containers:
       - name: eric
-        image: nginx
+        image: nginx11
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: thomisis
               key: MYSQL_ROOT_PASSWORD
-
-
-
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:

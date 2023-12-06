@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  franklin
+  labels:
+    app: franklin
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: franklin
+  template:
+    metadata:
+      labels:
+        app: franklin
+    spec:
+      containers:
+      - name: my-container
+        image: nginx
+      nodeSelector:
+        data: red
