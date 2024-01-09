@@ -1,0 +1,8 @@
+1- deployment 
+2- service 
+3- hpa 
+4- service account
+5- pdb 
+6- secret 
+7- configmap 
+8-  networkpolicy 

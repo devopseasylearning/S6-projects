@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: required
-  labels:
-    data: blue
+  name: pod-affinity
 spec:
   replicas: 3
   selector:
@@ -18,11 +16,12 @@ spec:
       - name: my-container
         image: nginx
       affinity:
-        nodeAffinity:
+        podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+          - labelSelector:
+              matchExpressions:
               - key: data
                 operator: In
                 values:
                 - blue
+            topologyKey: kubernetes.io/hostname
